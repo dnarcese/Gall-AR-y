@@ -88,7 +88,6 @@ class Album extends Component {
       if (err) {
         return alert('There was an error uploading your photo: ', err.message);
       }
-      alert('Successfully uploaded photo.');
     });
     
     // Create the DynamoDB service object
@@ -107,7 +106,6 @@ class Album extends Component {
       if (err) {
         alert(err);
       } else {
-        console.log("Success", data);
         self.setState({images: imageArray});
       }
     });
@@ -150,7 +148,6 @@ class Album extends Component {
       if (err) {
         alert(err);
       } else {
-        console.log("Success", data);
         self.setState({images: imageArray});
       }
     });

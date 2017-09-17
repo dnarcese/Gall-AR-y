@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import './App.css';
-import { Icon, Header, Segment, List, Button, Modal, Input, Container } from 'semantic-ui-react'
+import { Icon, Header, Segment, Button, Modal, Input, Container, Table } from 'semantic-ui-react'
 import AWS from 'aws-sdk';
 import Album from './Album';
 import {
@@ -23,6 +23,10 @@ class Home extends Component {
   }
   
   componentWillMount() {
+    this.refresh();
+  }
+  
+  refresh = () => {
     const self = this;
     //get albums
     const bucketRegion = config.bucketRegion;
@@ -74,6 +78,38 @@ class Home extends Component {
     }
   }
   
+  deleteAlbum = (albumName) => {
+    const self = this;
+    const bucketRegion = config.bucketRegion;
+    const IdentityPoolId = config.IdentityPoolId;
+  
+    AWS.config.update({
+      region: bucketRegion,
+      credentials: new AWS.CognitoIdentityCredentials({
+        IdentityPoolId: IdentityPoolId
+      })
+    });
+    
+    // Create the DynamoDB service object
+    var ddb = new AWS.DynamoDB({apiVersion: '2012-10-08'});
+    var params = {
+      TableName: 'htn2017db',
+      Key: {
+        'tag' : {S: '0'},
+        'name' : {S: albumName}
+      }
+    };
+    
+    // Call DynamoDB to add the item to the table
+    ddb.deleteItem(params, function(err, data) {
+      if (err) {
+        alert(err);
+      } else {
+        self.refresh();
+      }
+    });
+  }
+  
   render() {
     if (this.state.redirect) {
       return (<Redirect to={'/album/' + this.state.album}/>);
@@ -81,22 +117,24 @@ class Home extends Component {
       return (
         <div style={{ fontSize:'20px', textAlign:'center'}}>
         <Container text>
-        <h2>Your Albums</h2>
+        <Table  basic='very' verticalAlign="middle" celled style={{marginTop:'50px', textAlign:'center'}}>
+          <Table.Header>
+            <Table.Row>
+              <Table.HeaderCell>Album Name</Table.HeaderCell>
+              <Table.HeaderCell>Delete</Table.HeaderCell>
+            </Table.Row>
+        </Table.Header>
+        <Table.Body>
         {
           this.state.albums.map(album => (
-          <List key={album} >
-            <List.Item>
-            <div style={{display:'inline'}}>
-              <List.Icon name='book'/>
-              <List.Content><Link to={"/album/"+album} onClick={() => {this.props.albumClick(album)}}>{album}</Link>
-              </List.Content>
-              <Button as="a"  floated="right" onClick circular color='red' icon='trash' />
-            </div>
-            
-            </List.Item>
-          </List>
+          <Table.Row key={album}>
+            <Table.Cell><Link to={"/album/"+album} onClick={() => {this.props.albumClick(album)}}>{album}</Link></Table.Cell>
+            <Table.Cell><Button as="a"   onClick={() => {this.deleteAlbum(album)}} circular color='red' icon='trash' /></Table.Cell>  
+          </Table.Row>
           ))
         }
+        </Table.Body>
+        </Table>
         <Button color='green' as='a' size='large' onClick={this.newAlbum}>New Album</Button>
         <Modal open={this.state.popup} size='small'>
           <Header content='Create a new album' />
@@ -120,7 +158,10 @@ class Home extends Component {
 }
 
 const Download = () => (
-  <div> To use this application, you must download the .apk and image target. Click here for the apk and here for the image target.  </div>
+  <div>
+  <h3 style={{textAlign:'center', lineHeight:'2'}}> To use this application, you must download the .apk and image target. <br/>Click <a href="https://s3-us-west-2.amazonaws.com/htn2017/gallARy.apk">here</a> for the apk and <a href="https://s3-us-west-2.amazonaws.com/htn2017/htn2017Target.jpg">here</a> for the image target.  </h3>
+  
+  </div>
 )
 
 class App extends Component {
@@ -158,6 +199,5 @@ class App extends Component {
     );
   }
 }
-
 
 export default App;
