@@ -9,6 +9,7 @@
 # production
 /build
 awsconfig.js
+/semantic
 
 # misc
 .DS_Store

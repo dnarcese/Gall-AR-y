@@ -85,11 +85,14 @@ class Home extends Component {
         {
           this.state.albums.map(album => (
           <List key={album} >
-            <List.Item style={{display:'inline', float:'left'}}>
+            <List.Item>
+            <div style={{display:'inline'}}>
               <List.Icon name='book'/>
               <List.Content><Link to={"/album/"+album} onClick={() => {this.props.albumClick(album)}}>{album}</Link>
               </List.Content>
-              <span style={{float:'right'}}><Button as="a" onClick circular color='red' icon='trash' /></span>
+              <Button as="a"  floated="right" onClick circular color='red' icon='trash' />
+            </div>
+            
             </List.Item>
           </List>
           ))
@@ -116,6 +119,10 @@ class Home extends Component {
   }
 }
 
+const Download = () => (
+  <div> To use this application, you must download the .apk and image target. Click here for the apk and here for the image target.  </div>
+)
+
 class App extends Component {
   
   constructor(props) {
@@ -135,13 +142,17 @@ class App extends Component {
       <div>
         <Segment inverted>
           <Header as='h2' inverted color='violet' textAlign='center'>
-            <span style={{float:'left', marginRight:'-30px'}}><Link to="/" onClick={() => this.albumClick("Gall-AR-y")}><Icon inverted color='violet' name='home'/></Link></span>
+            <span style={{float:'left', marginRight:'-30px'}}>
+              <Link to="/" onClick={() => this.albumClick("Gall-AR-y")}><Icon inverted color='violet' name='home'/></Link>
+              <Link to="/download" onClick={() => this.albumClick("Downloads")}><Icon inverted color='violet' name='download'/></Link>
+            </span>
             {this.state.header}
           </Header>
           
         </Segment>
         <Route exact path="/" render={()=>(<Home albumClick={this.albumClick}/>)}/>
         <Route path="/album/:id" component={Album}/>
+        <Route path="/download" component={Download}/>
       </div>
       </Router>
     );
