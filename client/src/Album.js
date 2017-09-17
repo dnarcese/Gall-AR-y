@@ -164,7 +164,7 @@ class Album extends Component {
               <Button as="a" style={{position: "absolute", right: 0, bottom: 0, zIndex: 1}} onClick={() => {this.deleteButtonPress(image)}} circular color='red' icon='trash' />
                <p> {image} 
                 <div style={{overflow: "hidden", display: 'block', margin: '0 auto', width: 212, height: 212}}>
-                  <img alt={image} style={{width: "160%", margin: 'auto'}} src={"https://s3-us-west-2.amazonaws.com/htn2017/"+image}/>
+                  <img alt={image + " is not available yet. Please reload the page to see the image."} style={{width: "160%", margin: 'auto'}} src={"https://s3-us-west-2.amazonaws.com/htn2017/"+image}/>
                 </div>
                </p>
              </Grid.Column>))
